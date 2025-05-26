@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 import jwt from 'jsonwebtoken';
-import { randomUUID } from 'crypto';
+// import { randomUUID } from 'crypto';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
