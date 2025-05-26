@@ -8,7 +8,7 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   try {
     const guestSessionId = `guest_${Date.now()}`;
     const nickname = `게스트${Math.floor(Math.random() * 10000)}`;
