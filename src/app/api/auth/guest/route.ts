@@ -1,11 +1,12 @@
-// app/api/auth/guest/route.ts
-import { NextRequest, NextResponse } from 'next/server';
-import { Pool } from 'pg';
+import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
-// import { randomUUID } from 'crypto';
+import { Pool } from 'pg';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl:{
+    rejectUnauthorized: false,
+  },
 });
 
 export async function POST() {
@@ -13,7 +14,7 @@ export async function POST() {
     const guestSessionId = `guest_${Date.now()}`;
     const nickname = `게스트${Math.floor(Math.random() * 10000)}`;
 
-    // 1. users 테이블에 게스트 유저 추가
+    // users 테이블에 게스트 유저 추가
     const result = await pool.query(
       `INSERT INTO users (nickname, guest_session_id, is_guest)
        VALUES ($1, $2, true)
@@ -23,7 +24,7 @@ export async function POST() {
 
     const userId = result.rows[0].user_id;
 
-    // 2. JWT 토큰 발급
+    // JWT 발급
     const token = jwt.sign(
       {
         user_id: userId,
@@ -36,6 +37,7 @@ export async function POST() {
 
     return NextResponse.json({ token, userId, nickname });
   } catch (err) {
+    console.error('[GUEST LOGIN ERROR]', err);
     return NextResponse.json(
       { error: '게스트 로그인 실패', detail: err },
       { status: 500 }
