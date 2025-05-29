@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import { Client } from 'pg';
 
@@ -18,7 +19,10 @@ export async function GET() {
     const res = await client.query('SELECT id, user_id, name, email FROM "user"');
     await client.end();
     return NextResponse.json({ success: true, users: res.rows });
-  } catch (err: any) {
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    if (err instanceof Error){
+      return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    }
+    return NextResponse.json({ success: false, error: "Unknown error" }, { status: 500 });
   }
 }
