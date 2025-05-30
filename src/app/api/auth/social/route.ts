@@ -69,8 +69,9 @@ export async function POST(req: NextRequest) {
     );
 
     return NextResponse.json({ success: true, token, user_id });
-  } catch (err: any) {
-    console.error("🔥 소셜 로그인 에러:", err);
-    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  } catch (err) {
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    console.error("🔥 소셜 로그인 에러:", errorMessage);
+    return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }
