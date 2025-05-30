@@ -1,46 +1,46 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
-import { Pool } from 'pg';
+import { Client } from 'pg';
 
-const pool = new Pool({
-  connectionString: process.env.PGHOST,
-  ssl:{
-    rejectUnauthorized: false,
-  },
-});
+export async function POST(req: NextRequest) {
+  const client = new Client({
+    host: process.env.PGHOST,
+    port: Number(process.env.PGPORT),
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    ssl: { rejectUnauthorized: false }
+  });
 
-export async function POST() {
+  const guestToken = `guest-${uuidv4()}`;
+
   try {
-    const guestSessionId = `guest_${Date.now()}`;
-    const nickname = `게스트${Math.floor(Math.random() * 10000)}`;
+    await client.connect();
 
-    // users 테이블에 게스트 유저 추가
-    const result = await pool.query(
-      `INSERT INTO users (nickname, guest_session_id, is_guest)
-       VALUES ($1, $2, true)
-       RETURNING user_id`,
-      [nickname, guestSessionId]
+    const result = await client.query(
+      `INSERT INTO users (guest_token, is_guest)
+       VALUES ($1, true)
+       RETURNING user_id;`,
+      [guestToken]
     );
 
     const userId = result.rows[0].user_id;
 
-    // JWT 발급
+    await client.end();
+
     const token = jwt.sign(
       {
         user_id: userId,
-        guest_session_id: guestSessionId,
-        is_guest: true,
+        is_guest: true
       },
       process.env.JWT_SECRET!,
-      { expiresIn: '1d' }
+      { expiresIn: '7d' }
     );
 
-    return NextResponse.json({ token, userId, nickname });
-  } catch (err) {
-    console.error('[GUEST LOGIN ERROR]', err);
-    return NextResponse.json(
-      { error: '게스트 로그인 실패', detail: err },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: true, token, user_id: userId, guest_token: guestToken });
+  } catch (err: any) {
+    console.error("🔥 게스트 로그인 에러:", err);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }
