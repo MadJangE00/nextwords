@@ -116,7 +116,7 @@ export async function PATCH(req: NextRequest) {
             [user_cash, user_timeitem, user_glueitem, user_id]
         );
 
-        return NextResponse.json({ success: true, updated: result.rowCount > 0 });
+        return NextResponse.json({ success: true, updated: result.rowCount && result.rowCount > 0 });
     }catch (error: any) {
         console.error("Error updating items:", error.message);
         return NextResponse.json({success: false, error: error.message}, {status: 500});

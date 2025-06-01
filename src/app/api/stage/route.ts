@@ -97,7 +97,7 @@ export async function PATCH(req: NextRequest) {
             WHERE user_id = $4 AND stage_id = $5`,
             [high_score, stars, is_cleared, user_id, stage_id]
         );
-        return NextResponse.json({ success: true, updated: result.rowCount > 0 });
+        return NextResponse.json({ success: true, updated: result.rowCount && result.rowCount > 0 });
     } catch (error: any) {
         console.error("Error updating stage record:", error.message);
         return NextResponse.json({ success: false, error: error.message}, {status: 500});
