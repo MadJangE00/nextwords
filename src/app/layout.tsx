@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tiltburger | Indieverse",
+  title: "GesTiltBugger | Indieverse",
   description: "Indieverse의 소셜 미디어 플랫폼",
 };
 
