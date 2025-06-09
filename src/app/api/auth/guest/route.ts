@@ -32,7 +32,7 @@ export async function POST() { // eslint-disable-line @typescript-eslint/no-unus
 
     const userId = result.rows[0].user_id;
 
-    const jwtPayload = { usesr_id: userId};
+    const jwtPayload = { user_id: userId};
     const token = jwt.sign(jwtPayload, process.env.JWT_SECRET!, { expiresIn: '7d' });
 
     return NextResponse.json({ success: true, token, user_id: userId, guest_token: guestToken });
