@@ -32,8 +32,12 @@ export async function POST() { // eslint-disable-line @typescript-eslint/no-unus
 
     const userId = result.rows[0].user_id;
 
-    const jwtPayload = { user_id: userId};
-    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET!, { expiresIn: '7d' });
+    const jwtPayload = { 
+      user_id: userId, 
+      iat: Math.floor(Date.now() / 1000),
+      jti: randomUUID(),
+    };
+    const token = jwt.sign(jwtPayload, process.env.JWT_SECRET!, { expiresIn: '7d', algorithm: 'HS256' });
 
     return NextResponse.json({ success: true, token, user_id: userId, guest_token: guestToken });
   } catch (err) { // eslint-disable-line @typescript-eslint/no-explicit-any
