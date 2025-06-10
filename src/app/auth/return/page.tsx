@@ -1,18 +1,27 @@
-// src/app/auth/return/page.tsx
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 export default function AuthReturnPage() {
-  const searchParams = useSearchParams();
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    if (token) {
-      window.location.href = `unityapp://login?token=${token}`;
+    if (status === "authenticated" && session?.user) {
+      const token = (session.user as any).token; // 타입 우회
+      if (token) {
+        window.location.href = `unityapp://login?token=${token}`;
+      } else {
+        console.warn("⚠️ 토큰이 없음");
+      }
     }
-  }, [searchParams]);
+  }, [session, status]);
+
+  if (status === "loading") {
+    return <p>로그인 세션 확인 중...</p>;
+  }
 
   return (
     <div>

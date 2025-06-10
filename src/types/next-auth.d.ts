@@ -8,6 +8,7 @@ declare module 'next-auth' {
       image?: string | null;
       social_id?: string;
       provider?: string;
+      token?: string;
     };
   }
 
