@@ -7,7 +7,7 @@ export default function GoogleCallbackClient() {
     const hash = window.location.hash.substring(1)
     const params = new URLSearchParams(hash)
     const idToken = params.get('id_token')
-    const guestToken = localStorage.getItem('guest_token') ?? ''
+    const guestToken = params.get('state')?? ''
 
     if (idToken) {
       fetch('http://localhost:8000/auth/social', {
