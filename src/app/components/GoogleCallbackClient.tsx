@@ -10,7 +10,7 @@ export default function GoogleCallbackClient() {
     const guestToken = params.get('state')?? ''
 
     if (idToken) {
-      fetch('http://localhost:8000/auth/social', {
+      fetch('https://indieverseapi.org/auth/social', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_token: idToken, guest_token: guestToken }),
